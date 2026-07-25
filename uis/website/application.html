@@ -1,0 +1,347 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nexova Solutions | Registro de interés empresarial</title>
+    <meta
+      name="description"
+      content="Formulario de registro de interés para empresas que buscan servicios de búsqueda ejecutiva, equipos de atención al cliente o formación corporativa con Nexova Solutions."
+    />
+    <meta name="robots" content="index,follow" />
+    <meta name="theme-color" content="#0f172a" />
+    <meta property="og:title" content="Nexova Solutions | Registro de interés empresarial" />
+    <meta
+      property="og:description"
+      content="Comparte las necesidades de tu empresa para que Nexova Solutions te acompañe con servicios de talento y desarrollo corporativo."
+    />
+    <meta property="og:type" content="website" />
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="min-h-screen bg-slate-50 text-slate-900 antialiased">
+    <!-- Skip link for keyboard users -->
+    <a
+      href="#main-content"
+      class="sr-only z-50 m-3 rounded-md bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm focus:not-sr-only focus:absolute focus:left-0 focus:top-0 focus:outline-none focus:ring-2 focus:ring-sky-400 focus:ring-offset-2"
+    >
+      Saltar al contenido principal
+    </a>
+
+    <!-- Header with contextual navigation -->
+    <header class="border-b border-slate-200 bg-white/95 backdrop-blur">
+      <div class="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
+        <p class="text-lg font-semibold tracking-tight text-slate-900">Nexova Solutions</p>
+        <nav aria-label="Navegación de la página" class="w-full sm:w-auto">
+          <ul class="flex flex-wrap items-center gap-2 text-sm font-medium text-slate-700 sm:gap-4">
+            <li>
+              <a
+                href="index.html"
+                class="inline-flex min-h-11 items-center rounded-md px-3 py-2 transition hover:bg-slate-100 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
+                >Volver a inicio</a
+              >
+            </li>
+            <li>
+              <a
+                href="index.html#servicios"
+                class="inline-flex min-h-11 items-center rounded-md px-3 py-2 transition hover:bg-slate-100 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
+                >Ver servicios</a
+              >
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main-content">
+      <section class="border-b border-slate-200 bg-gradient-to-br from-slate-900 via-slate-800 to-sky-900 text-white">
+        <div class="mx-auto w-full max-w-6xl px-4 py-12 sm:px-6 sm:py-14 lg:px-8 lg:py-16">
+          <h1 class="text-3xl font-bold leading-tight tracking-tight sm:text-4xl">Conversemos sobre las necesidades de tu empresa</h1>
+          <p class="mt-4 max-w-3xl text-base leading-relaxed text-slate-100 sm:text-lg">
+            Este formulario está dirigido a representantes de empresas interesadas en los servicios de Nexova Solutions. Comparte tu contexto para que podamos responder con una propuesta alineada a tus objetivos.
+          </p>
+        </div>
+      </section>
+
+      <section class="mx-auto grid w-full max-w-6xl gap-8 px-4 py-10 sm:px-6 lg:grid-cols-12 lg:gap-10 lg:px-8 lg:py-12">
+        <div class="lg:col-span-8">
+          <form
+            id="application-form"
+            method="post"
+            action="#"
+            novalidate
+            aria-labelledby="form-title"
+            class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6 lg:p-8"
+          >
+            <h2 id="form-title" class="text-2xl font-semibold tracking-tight text-slate-900">Registro de solicitud empresarial</h2>
+            <p class="mt-2 text-sm leading-relaxed text-slate-700">
+              Completa los siguientes datos para que nuestro equipo pueda entender el alcance y coordinar la respuesta adecuada.
+            </p>
+            <div id="form-status" role="status" aria-live="polite" aria-atomic="true" class="mt-4 rounded-md border border-transparent px-3 py-2 text-sm text-slate-700"></div>
+
+            <div class="mt-6 grid gap-5 md:grid-cols-2">
+              <div>
+                <label for="contact-name" class="block text-sm font-medium text-slate-900">Nombre completo</label>
+                <input
+                  id="contact-name"
+                  name="contact_name"
+                  type="text"
+                  autocomplete="name"
+                  required
+                  minlength="2"
+                  maxlength="80"
+                  aria-describedby="contact-name-error"
+                  class="mt-2 block min-h-11 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-base text-slate-900 shadow-sm transition placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500"
+                />
+                <p id="contact-name-error" class="mt-2 min-h-5 text-sm font-medium text-rose-700"></p>
+              </div>
+
+              <div>
+                <label for="work-email" class="block text-sm font-medium text-slate-900">Correo electrónico corporativo</label>
+                <input
+                  id="work-email"
+                  name="work_email"
+                  type="email"
+                  autocomplete="email"
+                  required
+                  maxlength="120"
+                  aria-describedby="work-email-help work-email-error"
+                  class="mt-2 block min-h-11 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-base text-slate-900 shadow-sm transition placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500"
+                />
+                <p id="work-email-help" class="mt-2 text-sm text-slate-600">Usaremos este correo para responder a tu solicitud.</p>
+                <p id="work-email-error" class="mt-2 min-h-5 text-sm font-medium text-rose-700"></p>
+              </div>
+
+              <div>
+                <label for="phone" class="block text-sm font-medium text-slate-900">Número de teléfono</label>
+                <input
+                  id="phone"
+                  name="phone"
+                  type="tel"
+                  autocomplete="tel"
+                  required
+                  maxlength="25"
+                  aria-describedby="phone-help phone-error"
+                  class="mt-2 block min-h-11 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-base text-slate-900 shadow-sm transition placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500"
+                />
+                <p id="phone-help" class="mt-2 text-sm text-slate-600">Se aceptan formatos internacionales.</p>
+                <p id="phone-error" class="mt-2 min-h-5 text-sm font-medium text-rose-700"></p>
+              </div>
+
+              <div>
+                <label for="company-name" class="block text-sm font-medium text-slate-900">Nombre de la empresa</label>
+                <input
+                  id="company-name"
+                  name="company_name"
+                  type="text"
+                  autocomplete="organization"
+                  required
+                  minlength="2"
+                  maxlength="120"
+                  aria-describedby="company-name-error"
+                  class="mt-2 block min-h-11 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-base text-slate-900 shadow-sm transition placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500"
+                />
+                <p id="company-name-error" class="mt-2 min-h-5 text-sm font-medium text-rose-700"></p>
+              </div>
+
+              <div>
+                <label for="country" class="block text-sm font-medium text-slate-900">País de operación principal</label>
+                <select
+                  id="country"
+                  name="country"
+                  autocomplete="country-name"
+                  required
+                  aria-describedby="country-error"
+                  class="mt-2 block min-h-11 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-base text-slate-900 shadow-sm transition focus:outline-none focus:ring-2 focus:ring-sky-500"
+                >
+                  <option value="">Selecciona un país</option>
+                  <option value="chile">Chile</option>
+                  <option value="argentina">Argentina</option>
+                  <option value="otro">Otro país</option>
+                </select>
+                <p id="country-error" class="mt-2 min-h-5 text-sm font-medium text-rose-700"></p>
+              </div>
+
+              <div>
+                <label for="employee-count" class="block text-sm font-medium text-slate-900">Cantidad aproximada de empleados</label>
+                <input
+                  id="employee-count"
+                  name="employee_count"
+                  type="number"
+                  required
+                  min="1"
+                  max="100000"
+                  step="1"
+                  inputmode="numeric"
+                  aria-describedby="employee-count-help employee-count-error"
+                  class="mt-2 block min-h-11 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-base text-slate-900 shadow-sm transition focus:outline-none focus:ring-2 focus:ring-sky-500"
+                />
+                <p id="employee-count-help" class="mt-2 text-sm text-slate-600">Puedes indicar un número aproximado.</p>
+                <p id="employee-count-error" class="mt-2 min-h-5 text-sm font-medium text-rose-700"></p>
+              </div>
+
+              <fieldset id="service-interest-group" class="md:col-span-2">
+                <legend class="text-sm font-medium text-slate-900">Servicio de interés</legend>
+                <div class="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                  <label for="service-executive-search" class="flex min-h-11 items-start gap-3 rounded-md border border-slate-300 bg-white px-3 py-3 text-sm text-slate-800">
+                    <input
+                      id="service-executive-search"
+                      name="service_interest"
+                      type="radio"
+                      value="executive_search"
+                      required
+                      aria-describedby="service-interest-error"
+                      class="mt-1 h-4 w-4 border-slate-400 text-sky-600 focus:ring-sky-500"
+                    />
+                    Búsqueda ejecutiva
+                  </label>
+                  <label for="service-customer-support" class="flex min-h-11 items-start gap-3 rounded-md border border-slate-300 bg-white px-3 py-3 text-sm text-slate-800">
+                    <input
+                      id="service-customer-support"
+                      name="service_interest"
+                      type="radio"
+                      value="customer_support"
+                      required
+                      aria-describedby="service-interest-error"
+                      class="mt-1 h-4 w-4 border-slate-400 text-sky-600 focus:ring-sky-500"
+                    />
+                    Equipos de atención al cliente
+                  </label>
+                  <label for="service-corporate-training" class="flex min-h-11 items-start gap-3 rounded-md border border-slate-300 bg-white px-3 py-3 text-sm text-slate-800">
+                    <input
+                      id="service-corporate-training"
+                      name="service_interest"
+                      type="radio"
+                      value="corporate_training"
+                      required
+                      aria-describedby="service-interest-error"
+                      class="mt-1 h-4 w-4 border-slate-400 text-sky-600 focus:ring-sky-500"
+                    />
+                    Formación corporativa
+                  </label>
+                </div>
+                <p id="service-interest-error" class="mt-2 min-h-5 text-sm font-medium text-rose-700"></p>
+              </fieldset>
+
+              <div>
+                <label for="start-date" class="block text-sm font-medium text-slate-900">Fecha estimada de inicio</label>
+                <input
+                  id="start-date"
+                  name="start_date"
+                  type="date"
+                  required
+                  aria-describedby="start-date-help start-date-error"
+                  class="mt-2 block min-h-11 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-base text-slate-900 shadow-sm transition focus:outline-none focus:ring-2 focus:ring-sky-500"
+                />
+                <p id="start-date-help" class="mt-2 text-sm text-slate-600">La fecha puede ser aproximada.</p>
+                <p id="start-date-error" class="mt-2 min-h-5 text-sm font-medium text-rose-700"></p>
+              </div>
+
+              <fieldset id="preferred-contact-group">
+                <legend class="text-sm font-medium text-slate-900">Método de contacto preferido</legend>
+                <div class="mt-3 grid gap-3 sm:grid-cols-2">
+                  <label for="contact-by-email" class="flex min-h-11 items-start gap-3 rounded-md border border-slate-300 bg-white px-3 py-3 text-sm text-slate-800">
+                    <input
+                      id="contact-by-email"
+                      name="preferred_contact"
+                      type="radio"
+                      value="email"
+                      required
+                      aria-describedby="preferred-contact-error"
+                      class="mt-1 h-4 w-4 border-slate-400 text-sky-600 focus:ring-sky-500"
+                    />
+                    Correo electrónico
+                  </label>
+                  <label for="contact-by-phone" class="flex min-h-11 items-start gap-3 rounded-md border border-slate-300 bg-white px-3 py-3 text-sm text-slate-800">
+                    <input
+                      id="contact-by-phone"
+                      name="preferred_contact"
+                      type="radio"
+                      value="phone"
+                      required
+                      aria-describedby="preferred-contact-error"
+                      class="mt-1 h-4 w-4 border-slate-400 text-sky-600 focus:ring-sky-500"
+                    />
+                    Teléfono
+                  </label>
+                </div>
+                <p id="preferred-contact-error" class="mt-2 min-h-5 text-sm font-medium text-rose-700"></p>
+              </fieldset>
+
+              <div class="md:col-span-2">
+                <label for="project-details" class="block text-sm font-medium text-slate-900">Cuéntanos qué necesita tu empresa</label>
+                <p id="project-details-help" class="mt-2 text-sm text-slate-600">
+                  Describe la necesidad de negocio, el alcance esperado y el resultado deseado.
+                </p>
+                <textarea
+                  id="project-details"
+                  name="project_details"
+                  required
+                  minlength="30"
+                  maxlength="1000"
+                  rows="6"
+                  aria-describedby="project-details-help project-details-counter project-details-error"
+                  class="mt-2 block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-base text-slate-900 shadow-sm transition focus:outline-none focus:ring-2 focus:ring-sky-500"
+                ></textarea>
+                <p id="project-details-counter" class="mt-2 text-sm text-slate-600">0 de 1000 caracteres</p>
+                <p id="project-details-error" class="mt-2 min-h-5 text-sm font-medium text-rose-700"></p>
+              </div>
+
+              <div class="md:col-span-2">
+                <label for="privacy-consent" class="flex min-h-11 items-start gap-3 rounded-md border border-slate-300 bg-slate-50 px-3 py-3 text-sm text-slate-800">
+                  <input
+                    id="privacy-consent"
+                    name="privacy_consent"
+                    type="checkbox"
+                    value="accepted"
+                    required
+                    aria-describedby="privacy-consent-error"
+                    class="mt-1 h-4 w-4 rounded border-slate-400 text-sky-600 focus:ring-sky-500"
+                  />
+                  Acepto que Nexova Solutions utilice la información proporcionada para responder a esta solicitud.
+                </label>
+                <p id="privacy-consent-error" class="mt-2 min-h-5 text-sm font-medium text-rose-700"></p>
+              </div>
+            </div>
+
+            <div class="mt-8 flex flex-col gap-3 sm:flex-row">
+              <button
+                type="submit"
+                class="inline-flex min-h-11 items-center justify-center rounded-md bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-900 focus-visible:ring-offset-2"
+              >
+                Enviar solicitud
+              </button>
+              <button
+                type="reset"
+                class="inline-flex min-h-11 items-center justify-center rounded-md border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-800 transition hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
+              >
+                Limpiar formulario
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <aside class="lg:col-span-4">
+          <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+            <h2 class="text-xl font-semibold tracking-tight text-slate-900">Servicios de Nexova Solutions</h2>
+            <p class="mt-3 text-sm leading-relaxed text-slate-700">
+              Al completar tu solicitud, indícanos el servicio principal para orientar el primer contacto.
+            </p>
+            <ul class="mt-5 space-y-3 text-sm text-slate-700">
+              <li class="rounded-lg border border-slate-200 bg-slate-50 px-3 py-3">Búsqueda ejecutiva para mandos medios y liderazgo.</li>
+              <li class="rounded-lg border border-slate-200 bg-slate-50 px-3 py-3">Equipos de atención al cliente para empresas tecnológicas.</li>
+              <li class="rounded-lg border border-slate-200 bg-slate-50 px-3 py-3">Formación corporativa en habilidades blandas y liderazgo.</li>
+            </ul>
+          </div>
+        </aside>
+      </section>
+    </main>
+
+    <footer class="border-t border-slate-200 bg-white">
+      <div class="mx-auto flex w-full max-w-6xl flex-col gap-3 px-4 py-8 text-sm text-slate-600 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
+        <p class="font-medium text-slate-700">Nexova Solutions</p>
+        <p>Consultoría de recursos humanos y adquisición de talento para empresas medianas.</p>
+        <p>Chile y Argentina</p>
+      </div>
+    </footer>
+  </body>
+</html>
