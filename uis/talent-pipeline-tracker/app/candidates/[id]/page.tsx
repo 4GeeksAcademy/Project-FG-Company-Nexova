@@ -210,6 +210,12 @@ export default function CandidateDetailPage() {
           </dl>
 
           <div className="mt-4 flex flex-wrap gap-3">
+            <Link
+              href={`/candidates/${candidate.id}/edit`}
+              className="text-sm font-medium text-blue-600 hover:text-blue-800"
+            >
+              Editar perfil
+            </Link>
             {candidate.linkedin_url && (
               <a
                 href={candidate.linkedin_url}
