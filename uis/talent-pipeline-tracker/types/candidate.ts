@@ -1,6 +1,6 @@
-export type CandidateStatus = "received" | "in_progress" | "discarded";
+export type CandidateStatus = "received" | "in_progress" | "discarded" | "selected";
 
-export type CandidateStage = "pending" | "review" | "personal_interview";
+export type CandidateStage = "pending" | "review" | "personal_interview" | "technical_interview";
 
 export interface Candidate {
   id: string;

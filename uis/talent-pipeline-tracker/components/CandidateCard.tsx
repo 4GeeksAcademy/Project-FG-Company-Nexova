@@ -43,6 +43,8 @@ function statusBadgeClass(status: Candidate["status"]): string {
       return "bg-amber-50 text-amber-700";
     case "discarded":
       return "bg-red-50 text-red-700";
+    case "selected":
+      return "bg-green-50 text-green-700";
   }
 }
 
@@ -54,6 +56,8 @@ function statusLabel(status: Candidate["status"]): string {
       return "En progreso";
     case "discarded":
       return "Descartado";
+    case "selected":
+      return "Seleccionado";
   }
 }
 
@@ -65,5 +69,7 @@ function stageLabel(stage: Candidate["stage"]): string {
       return "Revisión";
     case "personal_interview":
       return "Entrevista personal";
+    case "technical_interview":
+      return "Entrevista técnica";
   }
 }

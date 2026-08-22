@@ -4,13 +4,29 @@ import { useEffect, useState } from "react";
 import type { Candidate } from "@/types/candidate";
 import { getRecords, ApiClientError } from "@/lib/api";
 import CandidateCard from "./CandidateCard";
+import CandidateFilters, { type Filters } from "./CandidateFilters";
+
+const DEBOUNCE_MS = 400;
 
 export default function CandidateList() {
   const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [filters, setFilters] = useState<Filters>({
+    search: "",
+    status: "",
+    stage: "",
+  });
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [retryKey, setRetryKey] = useState(0);
 
+  // Debounce search so we don't fire a request on every keystroke
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(filters.search), DEBOUNCE_MS);
+    return () => clearTimeout(timer);
+  }, [filters.search]);
+
+  // Fetch whenever debouncedSearch, status, or stage changes
   useEffect(() => {
     let cancelled = false;
 
@@ -18,7 +34,13 @@ export default function CandidateList() {
       setLoading(true);
       setError(null);
       try {
-        const response = await getRecords(1, 100);
+        const response = await getRecords({
+          page: 1,
+          limit: 100,
+          search: debouncedSearch || undefined,
+          status: filters.status || undefined,
+          stage: filters.stage || undefined,
+        });
         if (!cancelled) setCandidates(response.data);
       } catch (err) {
         if (!cancelled) {
@@ -40,7 +62,7 @@ export default function CandidateList() {
     return () => {
       cancelled = true;
     };
-  }, [retryKey]);
+  }, [debouncedSearch, filters.status, filters.stage, retryKey]);
 
   if (loading) {
     return (
@@ -71,19 +93,20 @@ export default function CandidateList() {
     );
   }
 
-  if (candidates.length === 0) {
-    return (
-      <div className="rounded-lg border border-zinc-200 bg-zinc-50 p-6 text-center">
-        <p className="text-zinc-500">No hay candidatos registrados.</p>
-      </div>
-    );
-  }
-
   return (
-    <div className="space-y-3">
-      {candidates.map((candidate) => (
-        <CandidateCard key={candidate.id} candidate={candidate} />
-      ))}
+    <div className="space-y-4">
+      <CandidateFilters filters={filters} onChange={setFilters} />
+      {candidates.length === 0 ? (
+        <div className="rounded-lg border border-zinc-200 bg-zinc-50 p-6 text-center">
+          <p className="text-zinc-500">No hay candidatos registrados.</p>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {candidates.map((candidate) => (
+            <CandidateCard key={candidate.id} candidate={candidate} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

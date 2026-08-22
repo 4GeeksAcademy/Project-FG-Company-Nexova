@@ -1,5 +1,7 @@
 import type {
   Candidate,
+  CandidateStage,
+  CandidateStatus,
   CreateCandidatePayload,
   CreateNotePayload,
   Note,
@@ -56,13 +58,24 @@ async function request<T>(
 
 // ── Records ──────────────────────────────────────────────────────
 
+export interface GetRecordsParams {
+  page?: number;
+  limit?: number;
+  search?: string;
+  status?: CandidateStatus;
+  stage?: CandidateStage;
+}
+
 export async function getRecords(
-  page = 1,
-  limit = 20
+  params: GetRecordsParams = {}
 ): Promise<PaginatedResponse> {
-  return request<PaginatedResponse>(
-    `/records?page=${page}&limit=${limit}`
-  );
+  const query = new URLSearchParams();
+  if (params.page) query.set("page", String(params.page));
+  if (params.limit) query.set("limit", String(params.limit));
+  if (params.search) query.set("search", params.search);
+  if (params.status) query.set("status", params.status);
+  if (params.stage) query.set("stage", params.stage);
+  return request<PaginatedResponse>(`/records?${query.toString()}`);
 }
 
 export async function getRecord(id: string): Promise<Candidate> {
