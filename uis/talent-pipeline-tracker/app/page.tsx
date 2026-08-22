@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import CandidateList from "@/components/CandidateList";
 
@@ -25,7 +26,15 @@ export default function Home() {
         </div>
       </header>
       <main className="mx-auto max-w-4xl px-4 py-8 sm:px-6">
-        <CandidateList />
+        <Suspense
+          fallback={
+            <div className="flex justify-center py-12 text-zinc-500">
+              Cargando candidatos...
+            </div>
+          }
+        >
+          <CandidateList />
+        </Suspense>
       </main>
     </div>
   );

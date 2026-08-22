@@ -1,24 +1,75 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import type { Candidate } from "@/types/candidate";
+import { useEffect, useMemo, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import type { Candidate, CandidateStage, CandidateStatus } from "@/types/candidate";
 import { getRecords, ApiClientError } from "@/lib/api";
 import CandidateCard from "./CandidateCard";
 import CandidateFilters, { type Filters } from "./CandidateFilters";
 
 const DEBOUNCE_MS = 400;
+const VALID_STATUS: CandidateStatus[] = ["received", "in_progress", "discarded", "selected"];
+const VALID_STAGE: CandidateStage[] = ["pending", "review", "personal_interview", "technical_interview"];
+
+function toValidStatus(value: string | null): "" | CandidateStatus {
+  if (value && VALID_STATUS.includes(value as CandidateStatus)) {
+    return value as CandidateStatus;
+  }
+  return "";
+}
+
+function toValidStage(value: string | null): "" | CandidateStage {
+  if (value && VALID_STAGE.includes(value as CandidateStage)) {
+    return value as CandidateStage;
+  }
+  return "";
+}
 
 export default function CandidateList() {
+  const pathname = usePathname();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
   const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [filters, setFilters] = useState<Filters>({
-    search: "",
-    status: "",
-    stage: "",
-  });
+
+  const filters = useMemo<Filters>(
+    () => ({
+      search: searchParams.get("search") ?? "",
+      status: toValidStatus(searchParams.get("status")),
+      stage: toValidStage(searchParams.get("stage")),
+    }),
+    [searchParams]
+  );
+
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [retryKey, setRetryKey] = useState(0);
+
+  function updateUrl(nextFilters: Filters) {
+    const params = new URLSearchParams(searchParams.toString());
+
+    if (nextFilters.search.trim()) {
+      params.set("search", nextFilters.search.trim());
+    } else {
+      params.delete("search");
+    }
+
+    if (nextFilters.status) {
+      params.set("status", nextFilters.status);
+    } else {
+      params.delete("status");
+    }
+
+    if (nextFilters.stage) {
+      params.set("stage", nextFilters.stage);
+    } else {
+      params.delete("stage");
+    }
+
+    const query = params.toString();
+    router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
+  }
 
   // Debounce search so we don't fire a request on every keystroke
   useEffect(() => {
@@ -95,7 +146,7 @@ export default function CandidateList() {
 
   return (
     <div className="space-y-4">
-      <CandidateFilters filters={filters} onChange={setFilters} />
+      <CandidateFilters filters={filters} onChange={updateUrl} />
       {candidates.length === 0 ? (
         <div className="rounded-lg border border-zinc-200 bg-zinc-50 p-6 text-center">
           <p className="text-zinc-500">No hay candidatos registrados.</p>
