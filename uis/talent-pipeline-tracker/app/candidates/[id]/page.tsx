@@ -1,16 +1,18 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import type { Candidate } from "@/types/candidate";
-import { getRecord, ApiClientError } from "@/lib/api";
+import type { Candidate, CandidateStatus, CandidateStage } from "@/types/candidate";
+import { getRecord, patchRecord, ApiClientError } from "@/lib/api";
 
 export default function CandidateDetailPage() {
   const { id } = useParams<{ id: string }>();
   const [candidate, setCandidate] = useState<Candidate | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [updating, setUpdating] = useState(false);
+  const [updateError, setUpdateError] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -41,6 +43,42 @@ export default function CandidateDetailPage() {
       cancelled = true;
     };
   }, [id]);
+
+  const handleStatusChange = useCallback(async (newStatus: CandidateStatus) => {
+    if (!candidate) return;
+    setUpdating(true);
+    setUpdateError(null);
+    try {
+      const updated = await patchRecord(id, { status: newStatus });
+      setCandidate(updated);
+    } catch (err) {
+      setUpdateError(
+        err instanceof ApiClientError
+          ? `Error del servidor (${err.status})`
+          : "Error al actualizar estado"
+      );
+    } finally {
+      setUpdating(false);
+    }
+  }, [id, candidate]);
+
+  const handleStageChange = useCallback(async (newStage: CandidateStage) => {
+    if (!candidate) return;
+    setUpdating(true);
+    setUpdateError(null);
+    try {
+      const updated = await patchRecord(id, { stage: newStage });
+      setCandidate(updated);
+    } catch (err) {
+      setUpdateError(
+        err instanceof ApiClientError
+          ? `Error del servidor (${err.status})`
+          : "Error al actualizar etapa"
+      );
+    } finally {
+      setUpdating(false);
+    }
+  }, [id, candidate]);
 
   if (loading) {
     return (
@@ -152,6 +190,59 @@ export default function CandidateDetailPage() {
               >
                 Ver CV →
               </a>
+            )}
+          </div>
+        </div>
+
+        {/* Status / Stage update card */}
+        <div className="mt-6 rounded-lg border border-zinc-200 bg-white p-6 shadow-sm">
+          <h2 className="text-lg font-semibold text-zinc-900">
+            Actualizar estado
+          </h2>
+          {updateError && (
+            <p className="mt-2 text-sm text-red-600">{updateError}</p>
+          )}
+          <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center">
+            <div className="flex-1">
+              <label className="block text-xs font-medium text-zinc-500 uppercase tracking-wider mb-1">
+                Estado
+              </label>
+              <select
+                value={candidate.status}
+                onChange={(e) => handleStatusChange(e.target.value as CandidateStatus)}
+                disabled={updating}
+                className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:opacity-50"
+              >
+                <option value="received">Recibido</option>
+                <option value="in_progress">En progreso</option>
+                <option value="discarded">Descartado</option>
+                <option value="selected">Seleccionado</option>
+              </select>
+            </div>
+            <div className="flex-1">
+              <label className="block text-xs font-medium text-zinc-500 uppercase tracking-wider mb-1">
+                Etapa
+              </label>
+              <select
+                value={candidate.stage}
+                onChange={(e) => handleStageChange(e.target.value as CandidateStage)}
+                disabled={updating}
+                className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:opacity-50"
+              >
+                <option value="pending">Pendiente</option>
+                <option value="review">Revisión</option>
+                <option value="personal_interview">Entrevista personal</option>
+                <option value="technical_interview">Entrevista técnica</option>
+              </select>
+            </div>
+            {updating && (
+              <div className="flex items-center gap-2 text-sm text-zinc-500">
+                <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                </svg>
+                <span>Actualizando...</span>
+              </div>
             )}
           </div>
         </div>
