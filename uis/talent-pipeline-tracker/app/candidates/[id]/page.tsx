@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import type { Candidate, CandidateStatus, CandidateStage } from "@/types/candidate";
-import { getRecord, patchRecord, ApiClientError } from "@/lib/api";
+import { getRecord, patchRecord, createNote, deleteNote, ApiClientError } from "@/lib/api";
 
 export default function CandidateDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -13,6 +13,9 @@ export default function CandidateDetailPage() {
   const [error, setError] = useState<string | null>(null);
   const [updating, setUpdating] = useState(false);
   const [updateError, setUpdateError] = useState<string | null>(null);
+  const [noteText, setNoteText] = useState("");
+  const [savingNote, setSavingNote] = useState(false);
+  const [deletingNoteId, setDeletingNoteId] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -79,6 +82,42 @@ export default function CandidateDetailPage() {
       setUpdating(false);
     }
   }, [id, candidate]);
+
+  const handleAddNote = useCallback(async () => {
+    if (!candidate || !noteText.trim()) return;
+    setSavingNote(true);
+    try {
+      await createNote(id, { content: noteText.trim() });
+      setNoteText("");
+      const data = await getRecord(id);
+      setCandidate(data);
+    } catch (err) {
+      setUpdateError(
+        err instanceof ApiClientError
+          ? `Error del servidor (${err.status})`
+          : "Error al añadir nota"
+      );
+    } finally {
+      setSavingNote(false);
+    }
+  }, [id, candidate, noteText]);
+
+  const handleDeleteNote = useCallback(async (noteId: string) => {
+    setDeletingNoteId(noteId);
+    try {
+      await deleteNote(id, noteId);
+      const data = await getRecord(id);
+      setCandidate(data);
+    } catch (err) {
+      setUpdateError(
+        err instanceof ApiClientError
+          ? `Error del servidor (${err.status})`
+          : "Error al eliminar nota"
+      );
+    } finally {
+      setDeletingNoteId(null);
+    }
+  }, [id]);
 
   if (loading) {
     return (
@@ -252,18 +291,47 @@ export default function CandidateDetailPage() {
           <h2 className="text-lg font-semibold text-zinc-900">
             Notas ({candidate.notes_count})
           </h2>
+
+          {/* Add note form */}
+          <div className="mt-4 flex gap-2">
+            <input
+              type="text"
+              placeholder="Añadir una nota..."
+              value={noteText}
+              onChange={(e) => setNoteText(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter" && !savingNote) handleAddNote(); }}
+              className="flex-1 rounded-lg border border-zinc-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            />
+            <button
+              onClick={handleAddNote}
+              disabled={savingNote || !noteText.trim()}
+              className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+            >
+              {savingNote ? "Guardando..." : "Añadir"}
+            </button>
+          </div>
+
           {candidate.notes && candidate.notes.length > 0 ? (
             <ul className="mt-4 space-y-3">
               {candidate.notes.map((note) => (
-                <li key={note.id} className="rounded-md bg-zinc-50 p-3 text-sm text-zinc-700">
-                  <p>{note.content}</p>
-                  <p className="mt-1 text-xs text-zinc-400">
-                    {new Date(note.created_at).toLocaleDateString("es-ES", {
-                      year: "numeric",
-                      month: "short",
-                      day: "numeric",
-                    })}
-                  </p>
+                <li key={note.id} className="flex items-start justify-between rounded-md bg-zinc-50 p-3">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm text-zinc-700">{note.content}</p>
+                    <p className="mt-1 text-xs text-zinc-400">
+                      {new Date(note.created_at).toLocaleDateString("es-ES", {
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                      })}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => handleDeleteNote(note.id)}
+                    disabled={deletingNoteId === note.id}
+                    className="ml-2 shrink-0 text-sm text-red-500 hover:text-red-700 disabled:opacity-50"
+                  >
+                    {deletingNoteId === note.id ? "..." : "Eliminar"}
+                  </button>
                 </li>
               ))}
             </ul>
