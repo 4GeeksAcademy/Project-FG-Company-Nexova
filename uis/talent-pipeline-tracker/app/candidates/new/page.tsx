@@ -23,18 +23,39 @@ export default function NewCandidatePage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (saving) return;
+
+    const fullName = formData.full_name.trim();
+    const email = formData.email.trim();
+    const phone = formData.phone.trim();
+    const position = formData.position.trim();
+    const experienceYears = Number(formData.experience_years);
+
+    if (!fullName || !email || !phone || !position) {
+      setError("Completa todos los campos obligatorios.");
+      return;
+    }
+
+    if (Number.isNaN(experienceYears) || experienceYears < 0) {
+      setError("Los años de experiencia deben ser un número válido mayor o igual a 0.");
+      return;
+    }
+
     setSaving(true);
     setError(null);
     try {
       const candidate = await createRecord({
-        ...formData,
-        experience_years: Number(formData.experience_years),
+        full_name: fullName,
+        email,
+        phone,
+        position,
+        experience_years: experienceYears,
       });
       router.push(`/candidates/${candidate.id}`);
     } catch (err) {
       setError(
         err instanceof ApiClientError
-          ? `Error del servidor (${err.status})`
+          ? `Error del servidor (${err.status})${getApiErrorDetail(err.body)}`
           : err instanceof Error
             ? err.message
             : "Error al crear candidato"
@@ -149,4 +170,12 @@ export default function NewCandidatePage() {
       </div>
     </div>
   );
+}
+
+function getApiErrorDetail(body: unknown): string {
+  if (!body || typeof body !== "object") return "";
+  const maybeBody = body as { detail?: unknown; error?: unknown };
+  if (typeof maybeBody.error === "string") return `: ${maybeBody.error}`;
+  if (typeof maybeBody.detail === "string") return `: ${maybeBody.detail}`;
+  return "";
 }

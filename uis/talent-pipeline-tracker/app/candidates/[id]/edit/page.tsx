@@ -68,22 +68,40 @@ export default function EditCandidatePage() {
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (saving) return;
+
+    const fullName = form.full_name.trim();
+    const email = form.email.trim();
+    const phone = form.phone.trim();
+    const position = form.position.trim();
+    const experienceYears = Number(form.experience_years);
+
+    if (!fullName || !email || !phone || !position) {
+      setError("Completa todos los campos obligatorios.");
+      return;
+    }
+
+    if (Number.isNaN(experienceYears) || experienceYears < 0) {
+      setError("Los años de experiencia deben ser un número válido mayor o igual a 0.");
+      return;
+    }
+
     setSaving(true);
     setError(null);
 
     try {
       await updateRecord(id, {
-        full_name: form.full_name.trim(),
-        email: form.email.trim(),
-        phone: form.phone.trim(),
-        position: form.position.trim(),
-        experience_years: Number(form.experience_years),
+        full_name: fullName,
+        email,
+        phone,
+        position,
+        experience_years: experienceYears,
       });
       router.push(`/candidates/${id}`);
     } catch (err) {
       setError(
         err instanceof ApiClientError
-          ? `Error del servidor (${err.status})`
+          ? `Error del servidor (${err.status})${getApiErrorDetail(err.body)}`
           : "No se pudo guardar el candidato"
       );
     } finally {
@@ -216,4 +234,12 @@ export default function EditCandidatePage() {
       </main>
     </div>
   );
+}
+
+function getApiErrorDetail(body: unknown): string {
+  if (!body || typeof body !== "object") return "";
+  const maybeBody = body as { detail?: unknown; error?: unknown };
+  if (typeof maybeBody.error === "string") return `: ${maybeBody.error}`;
+  if (typeof maybeBody.detail === "string") return `: ${maybeBody.detail}`;
+  return "";
 }

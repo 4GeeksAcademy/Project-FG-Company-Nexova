@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import type { Candidate, CandidateStatus, CandidateStage } from "@/types/candidate";
-import { getRecord, patchRecord, createNote, deleteNote, ApiClientError } from "@/lib/api";
+import { getRecord, getNotes, patchRecord, createNote, deleteNote, ApiClientError } from "@/lib/api";
 
 export default function CandidateDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -13,6 +13,10 @@ export default function CandidateDetailPage() {
   const [error, setError] = useState<string | null>(null);
   const [updating, setUpdating] = useState(false);
   const [updateError, setUpdateError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [notes, setNotes] = useState<Candidate["notes"]>([]);
+  const [notesLoading, setNotesLoading] = useState(false);
+  const [notesError, setNotesError] = useState<string | null>(null);
   const [noteText, setNoteText] = useState("");
   const [savingNote, setSavingNote] = useState(false);
   const [deletingNoteId, setDeletingNoteId] = useState<string | null>(null);
@@ -25,7 +29,10 @@ export default function CandidateDetailPage() {
       setError(null);
       try {
         const data = await getRecord(id);
-        if (!cancelled) setCandidate(data);
+        if (!cancelled) {
+          setCandidate(data);
+          setNotes(Array.isArray(data.notes) ? data.notes : []);
+        }
       } catch (err) {
         if (!cancelled) {
           const message =
@@ -47,13 +54,43 @@ export default function CandidateDetailPage() {
     };
   }, [id]);
 
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadNotes() {
+      setNotesLoading(true);
+      setNotesError(null);
+      try {
+        const response = await getNotes(id);
+        if (!cancelled) setNotes(response.data);
+      } catch (err) {
+        if (!cancelled) {
+          setNotesError(
+            err instanceof ApiClientError
+              ? `Error del servidor (${err.status})`
+              : "Error al cargar notas"
+          );
+        }
+      } finally {
+        if (!cancelled) setNotesLoading(false);
+      }
+    }
+
+    loadNotes();
+    return () => {
+      cancelled = true;
+    };
+  }, [id]);
+
   const handleStatusChange = useCallback(async (newStatus: CandidateStatus) => {
-    if (!candidate) return;
+    if (!candidate || updating || candidate.status === newStatus) return;
     setUpdating(true);
     setUpdateError(null);
+    setSuccessMessage(null);
     try {
       const updated = await patchRecord(id, { status: newStatus });
       setCandidate(updated);
+      setSuccessMessage("Estado actualizado correctamente.");
     } catch (err) {
       setUpdateError(
         err instanceof ApiClientError
@@ -63,15 +100,17 @@ export default function CandidateDetailPage() {
     } finally {
       setUpdating(false);
     }
-  }, [id, candidate]);
+  }, [id, candidate, updating]);
 
   const handleStageChange = useCallback(async (newStage: CandidateStage) => {
-    if (!candidate) return;
+    if (!candidate || updating || candidate.stage === newStage) return;
     setUpdating(true);
     setUpdateError(null);
+    setSuccessMessage(null);
     try {
       const updated = await patchRecord(id, { stage: newStage });
       setCandidate(updated);
+      setSuccessMessage("Etapa actualizada correctamente.");
     } catch (err) {
       setUpdateError(
         err instanceof ApiClientError
@@ -81,16 +120,23 @@ export default function CandidateDetailPage() {
     } finally {
       setUpdating(false);
     }
-  }, [id, candidate]);
+  }, [id, candidate, updating]);
 
   const handleAddNote = useCallback(async () => {
-    if (!candidate || !noteText.trim()) return;
+    if (!candidate || savingNote || !noteText.trim()) return;
     setSavingNote(true);
+    setUpdateError(null);
+    setSuccessMessage(null);
     try {
       await createNote(id, { content: noteText.trim() });
       setNoteText("");
-      const data = await getRecord(id);
-      setCandidate(data);
+      const [candidateData, notesData] = await Promise.all([
+        getRecord(id),
+        getNotes(id),
+      ]);
+      setCandidate(candidateData);
+      setNotes(notesData.data);
+      setSuccessMessage("Nota añadida correctamente.");
     } catch (err) {
       setUpdateError(
         err instanceof ApiClientError
@@ -100,14 +146,22 @@ export default function CandidateDetailPage() {
     } finally {
       setSavingNote(false);
     }
-  }, [id, candidate, noteText]);
+  }, [id, candidate, noteText, savingNote]);
 
   const handleDeleteNote = useCallback(async (noteId: string) => {
+    if (deletingNoteId) return;
     setDeletingNoteId(noteId);
+    setUpdateError(null);
+    setSuccessMessage(null);
     try {
       await deleteNote(id, noteId);
-      const data = await getRecord(id);
-      setCandidate(data);
+      const [candidateData, notesData] = await Promise.all([
+        getRecord(id),
+        getNotes(id),
+      ]);
+      setCandidate(candidateData);
+      setNotes(notesData.data);
+      setSuccessMessage("Nota eliminada correctamente.");
     } catch (err) {
       setUpdateError(
         err instanceof ApiClientError
@@ -117,7 +171,7 @@ export default function CandidateDetailPage() {
     } finally {
       setDeletingNoteId(null);
     }
-  }, [id]);
+  }, [id, deletingNoteId]);
 
   if (loading) {
     return (
@@ -155,7 +209,19 @@ export default function CandidateDetailPage() {
     );
   }
 
-  if (!candidate) return null;
+  if (!candidate) {
+    return (
+      <div className="min-h-screen bg-zinc-50">
+        <HeaderBackLink />
+        <div className="mx-auto max-w-2xl px-4 py-12 sm:px-6">
+          <div className="rounded-lg border border-zinc-200 bg-white p-6 text-center">
+            <p className="text-zinc-800 font-medium">Candidato no disponible</p>
+            <p className="text-zinc-500 text-sm mt-1">No se encontró información para este registro.</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-zinc-50">
@@ -247,6 +313,9 @@ export default function CandidateDetailPage() {
           {updateError && (
             <p className="mt-2 text-sm text-red-600">{updateError}</p>
           )}
+          {successMessage && (
+            <p className="mt-2 text-sm text-green-700">{successMessage}</p>
+          )}
           <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center">
             <div className="flex-1">
               <label className="block text-xs font-medium text-zinc-500 uppercase tracking-wider mb-1">
@@ -306,6 +375,7 @@ export default function CandidateDetailPage() {
               value={noteText}
               onChange={(e) => setNoteText(e.target.value)}
               onKeyDown={(e) => { if (e.key === "Enter" && !savingNote) handleAddNote(); }}
+              disabled={savingNote}
               className="flex-1 rounded-lg border border-zinc-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
             />
             <button
@@ -317,9 +387,13 @@ export default function CandidateDetailPage() {
             </button>
           </div>
 
-          {candidate.notes && candidate.notes.length > 0 ? (
+          {notesLoading ? (
+            <p className="mt-4 text-sm text-zinc-500">Cargando notas...</p>
+          ) : notesError ? (
+            <p className="mt-4 text-sm text-red-600">{notesError}</p>
+          ) : notes && notes.length > 0 ? (
             <ul className="mt-4 space-y-3">
-              {candidate.notes.map((note) => (
+              {notes.map((note) => (
                 <li key={note.id} className="flex items-start justify-between rounded-md bg-zinc-50 p-3">
                   <div className="flex-1 min-w-0">
                     <p className="text-sm text-zinc-700">{note.content}</p>
@@ -333,7 +407,7 @@ export default function CandidateDetailPage() {
                   </div>
                   <button
                     onClick={() => handleDeleteNote(note.id)}
-                    disabled={deletingNoteId === note.id}
+                    disabled={Boolean(deletingNoteId)}
                     className="ml-2 shrink-0 text-sm text-red-500 hover:text-red-700 disabled:opacity-50"
                   >
                     {deletingNoteId === note.id ? "..." : "Eliminar"}
