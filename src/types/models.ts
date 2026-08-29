@@ -8,7 +8,7 @@
  * These types intentionally mirror the existing Talent Pipeline Tracker
  * (uis/talent-pipeline-tracker/types/candidate.ts) interface where the same
  * business entity is represented. The root models layer adds domain-pure
- * separation and additional entities (e.g. Recruiter) not present in the UI.
+ * separation without changing the verified candidate contract from the UI.
  * Both definitions describe the same Nexova candidate — they are kept
  * consistent to avoid drift.
  *
@@ -32,22 +32,12 @@ export type CandidateStage =
   | "personal_interview"
   | "technical_interview";
 
-// ── Entity: Recruiter ───────────────────────────────────────────
-
-/** Nexova recruitment consultant managing selection processes. */
-export interface Recruiter {
-  readonly id: string;
-  readonly full_name: string;
-  readonly email: string;
-  readonly team: string;
-}
-
 // ── Entity: CandidateNote ───────────────────────────────────────
 
 /** A note attached to a candidate record. */
 export interface CandidateNote {
   readonly id: string;
-  readonly candidate_id: string;
+  readonly record_id: string;
   readonly content: string;
   readonly created_at: string;
 }

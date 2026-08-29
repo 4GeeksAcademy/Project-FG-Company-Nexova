@@ -45,7 +45,7 @@ export const SAMPLE_CANDIDATES: readonly Candidate[] = [
     notes: [
       {
         id: "n001",
-        candidate_id: "c002",
+        record_id: "c002",
         content: "Experiencia relevante en retail. Contactar para entrevista.",
         created_at: "2026-08-21T11:00:00.000Z",
       },
@@ -68,7 +68,7 @@ export const SAMPLE_CANDIDATES: readonly Candidate[] = [
     notes: [
       {
         id: "n002",
-        candidate_id: "c003",
+        record_id: "c003",
         content: "Primera entrevista realizada. Buen dominio de finanzas corporativas. Pasar a técnica.",
         created_at: "2026-08-24T10:00:00.000Z",
       },
@@ -91,13 +91,13 @@ export const SAMPLE_CANDIDATES: readonly Candidate[] = [
     notes: [
       {
         id: "n003",
-        candidate_id: "c004",
+        record_id: "c004",
         content: "Entrevista personal completada. Buen fit cultural.",
         created_at: "2026-08-20T15:00:00.000Z",
       },
       {
         id: "n004",
-        candidate_id: "c004",
+        record_id: "c004",
         content: "Prueba técnica enviada. Pendiente de revisión.",
         created_at: "2026-08-26T09:00:00.000Z",
       },
@@ -120,7 +120,7 @@ export const SAMPLE_CANDIDATES: readonly Candidate[] = [
     notes: [
       {
         id: "n005",
-        candidate_id: "c005",
+        record_id: "c005",
         content: "Perfil excelente. Cliente aprobó contratación.",
         created_at: "2026-08-27T14:00:00.000Z",
       },
@@ -143,7 +143,7 @@ export const SAMPLE_CANDIDATES: readonly Candidate[] = [
     notes: [
       {
         id: "n006",
-        candidate_id: "c006",
+        record_id: "c006",
         content: "No cumple con requisitos técnicos mínimos. Descartado.",
         created_at: "2026-08-19T08:00:00.000Z",
       },
