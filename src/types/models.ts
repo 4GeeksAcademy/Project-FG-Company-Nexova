@@ -1,15 +1,73 @@
 /**
  * Nexova Recruitment Domain — Domain Models
  *
- * This module will define the core domain types for Nexova's recruitment
- * operations pipeline. The full model will be implemented in milestone C2.
+ * Core domain types for Nexova's Recruitment Operations pipeline.
+ * Pure TypeScript — no React, Next.js, browser API, or HTTP client coupling.
+ *
+ * Compatibility note:
+ * These types intentionally mirror the existing Talent Pipeline Tracker
+ * (uis/talent-pipeline-tracker/types/candidate.ts) interface where the same
+ * business entity is represented. The root models layer adds domain-pure
+ * separation and additional entities (e.g. Recruiter) not present in the UI.
+ * Both definitions describe the same Nexova candidate — they are kept
+ * consistent to avoid drift.
  *
  * Architecture rules:
- * - Pure TypeScript types only (no React, Next.js, or browser API coupling).
+ * - No `any`, no methods performing business processing.
  * - Reusable across all Nexova domain logic (utils, services, agents).
- * - The existing Candidate model in uis/talent-pipeline-tracker/types/candidate.ts
- *   is the source of truth — do not duplicate or redefine business concepts here.
+ * - Describes one entity per interface/type.
  */
 
-// Placeholder — domain models will be added in C2.
-export {};
+// ── Value / Union Types ──────────────────────────────────────────
+
+export type CandidateStatus =
+  | "received"
+  | "in_progress"
+  | "discarded"
+  | "selected";
+
+export type CandidateStage =
+  | "pending"
+  | "review"
+  | "personal_interview"
+  | "technical_interview";
+
+// ── Entity: Recruiter ───────────────────────────────────────────
+
+/** Nexova recruitment consultant managing selection processes. */
+export interface Recruiter {
+  readonly id: string;
+  readonly full_name: string;
+  readonly email: string;
+  readonly team: string;
+}
+
+// ── Entity: CandidateNote ───────────────────────────────────────
+
+/** A note attached to a candidate record. */
+export interface CandidateNote {
+  readonly id: string;
+  readonly candidate_id: string;
+  readonly content: string;
+  readonly created_at: string;
+}
+
+// ── Entity: Candidate ───────────────────────────────────────────
+
+/** A person going through Nexova's recruitment pipeline. */
+export interface Candidate {
+  readonly id: string;
+  readonly full_name: string;
+  readonly email: string;
+  readonly phone: string;
+  readonly position: string;
+  readonly linkedin_url: string;
+  readonly cv_url: string;
+  readonly status: CandidateStatus;
+  readonly stage: CandidateStage;
+  readonly experience_years: number;
+  readonly applied_at: string;
+  readonly updated_at: string;
+  readonly notes?: readonly CandidateNote[];
+  readonly notes_count: number;
+}
