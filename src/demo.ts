@@ -24,11 +24,22 @@ import {
   binarySearchCandidateByName,
   linearSearchCandidateById,
 } from "./utils/search.js";
+import {
+  averageExperienceByPosition,
+  averageExperienceYears,
+  countCandidatesByStage,
+  countCandidatesByStatus,
+  generateStageReport,
+  generateStatusReport,
+  maxExperienceYears,
+  minExperienceYears,
+  totalExperienceYears,
+} from "./utils/transformations.js";
 
 function printMilestoneBanner(): void {
   const border = "=".repeat(56);
   const title = "Nexova Solutions — TypeScript Business Logic";
-  const line1 = "Milestone : C3 — Collection Operations / C4 — Search Algorithms";
+  const line1 = "Milestone : C3 — Collection Operations / C4 — Search Algorithms / C5 — Aggregations";
   const line2 = "Department: Recruitment Operations";
   const line3 = `Samples   : ${SAMPLE_CANDIDATES.length} candidates loaded`;
 
@@ -224,7 +235,76 @@ function printC4Examples(): void {
   console.log();
 }
 
+// ── C5 — Aggregations and Reports ──────────────────────────────
+
+function printC5Examples(): void {
+  console.log("  C5 Aggregation Examples:\n");
+
+  // ── Count by category ────────────────────────────────────────
+  const statusCounts = countCandidatesByStatus(SAMPLE_CANDIDATES);
+  console.log("  Count by status:");
+  console.log(`    received: ${statusCounts.received}`);
+  console.log(`    in_progress: ${statusCounts.in_progress}`);
+  console.log(`    discarded: ${statusCounts.discarded}`);
+  console.log(`    selected: ${statusCounts.selected}`);
+
+  const stageCounts = countCandidatesByStage(SAMPLE_CANDIDATES);
+  console.log("  Count by stage:");
+  console.log(`    pending: ${stageCounts.pending}`);
+  console.log(`    review: ${stageCounts.review}`);
+  console.log(`    personal_interview: ${stageCounts.personal_interview}`);
+  console.log(`    technical_interview: ${stageCounts.technical_interview}`);
+
+  // ── Numeric totals ───────────────────────────────────────────
+  const totalExp = totalExperienceYears(SAMPLE_CANDIDATES);
+  console.log(`\n  Total experience years: ${totalExp}`);
+
+  // ── Averages ─────────────────────────────────────────────────
+  const avgExp = averageExperienceYears(SAMPLE_CANDIDATES);
+  console.log(`  Average experience years: ${avgExp.toFixed(2)}`);
+
+  const avgByPosition = averageExperienceByPosition(SAMPLE_CANDIDATES);
+  console.log("  Average experience by position:");
+  for (const position of Object.keys(avgByPosition).sort()) {
+    console.log(`    ${position.padEnd(30)} ${avgByPosition[position].toFixed(2)}y`);
+  }
+
+  // ── Maximum and minimum ──────────────────────────────────────
+  const maxExp = maxExperienceYears(SAMPLE_CANDIDATES);
+  const minExp = minExperienceYears(SAMPLE_CANDIDATES);
+  console.log(`\n  Maximum experience: ${maxExp}y`);
+  console.log(`  Minimum experience: ${minExp}y`);
+
+  // ── Meaningful reports ───────────────────────────────────────
+  console.log("\n  Stage Report:");
+  console.log(`  ${generateStageReport(SAMPLE_CANDIDATES).replace(/\n/g, "\n  ")}`);
+
+  console.log("\n  Status Report:");
+  console.log(`  ${generateStatusReport(SAMPLE_CANDIDATES).replace(/\n/g, "\n  ")}`);
+
+  // ── Empty array behavior ─────────────────────────────────────
+  const empty: readonly Candidate[] = [];
+  console.log("\n  Empty array behavior:");
+  console.log(`  - Count by status: ${JSON.stringify(countCandidatesByStatus(empty))}`);
+  console.log(`  - Count by stage: ${JSON.stringify(countCandidatesByStage(empty))}`);
+  console.log(`  - Total experience: ${totalExperienceYears(empty)}`);
+  console.log(`  - Average experience: ${averageExperienceYears(empty)}`);
+  console.log(`  - Average by position: ${JSON.stringify(averageExperienceByPosition(empty))}`);
+  console.log(`  - Max experience: ${maxExperienceYears(empty)}`);
+  console.log(`  - Min experience: ${minExperienceYears(empty)}`);
+  console.log(`  - Stage report: "${generateStageReport(empty)}"`);
+  console.log(`  - Status report: "${generateStatusReport(empty)}"`);
+
+  // ── Immutability check ───────────────────────────────────────
+  const sourceAfterAgg = SAMPLE_CANDIDATES[0]?.full_name ?? "";
+  console.log("\n  Immutability check:");
+  console.log(`  - Source unchanged after aggregations: ${sourceAfterAgg}`);
+
+  console.log();
+}
+
 printMilestoneBanner();
 printSampleSummary();
 printC3Examples();
 printC4Examples();
+printC5Examples();
