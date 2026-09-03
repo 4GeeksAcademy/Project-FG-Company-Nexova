@@ -35,11 +35,15 @@ import {
   minExperienceYears,
   totalExperienceYears,
 } from "./utils/transformations.js";
+import {
+  validateCandidate,
+  validateCandidateNote,
+} from "./utils/validations.js";
 
 function printMilestoneBanner(): void {
   const border = "=".repeat(56);
   const title = "Nexova Solutions — TypeScript Business Logic";
-  const line1 = "Milestone : C3 — Collection Operations / C4 — Search Algorithms / C5 — Aggregations";
+  const line1 = "Milestone : C3 — Collection Operations / C4 — Search Algorithms / C5 — Aggregations / C6 — Validations";
   const line2 = "Department: Recruitment Operations";
   const line3 = `Samples   : ${SAMPLE_CANDIDATES.length} candidates loaded`;
 
@@ -303,8 +307,58 @@ function printC5Examples(): void {
   console.log();
 }
 
+// ── C6 — Business Validations ──────────────────────────────────
+
+function printC6Examples(): void {
+  console.log("  C6 Validation Examples:\n");
+
+  // ── Valid candidate (from sample data) ───────────────────────
+  const validResult = validateCandidate(SAMPLE_CANDIDATES[0]);
+  console.log(`  Valid candidate (${SAMPLE_CANDIDATES[0].full_name}):`);
+  console.log(`    valid: ${validResult.valid}`);
+  console.log(`    errors: ${JSON.stringify(validResult.errors)}`);
+
+  // ── Candidate with notes ─────────────────────────────────────
+  const candidateWithNotes = SAMPLE_CANDIDATES[1];
+  const notesResult = validateCandidate(candidateWithNotes);
+  console.log(`\n  Candidate with notes (${candidateWithNotes.full_name}):`);
+  console.log(`    valid: ${notesResult.valid}`);
+  console.log(`    errors: ${JSON.stringify(notesResult.errors)}`);
+
+  // ── Invalid cases ────────────────────────────────────────────
+  const invalidCases: [string, unknown][] = [
+    ["null input", null],
+    ["undefined input", undefined],
+    ["non-object (number)", 42],
+    ["non-object (string)", "not-an-object"],
+    ["missing required field", {}],
+    ["empty required string", { id: "", full_name: "Test", email: "a@b", phone: "123", position: "Dev", linkedin_url: "url", cv_url: "url", status: "received", stage: "pending", experience_years: 1, notes_count: 0, applied_at: "2026-01-01", updated_at: "2026-01-01" }],
+    ["negative experience_years", { id: "x", full_name: "Test", email: "a@b", phone: "123", position: "Dev", linkedin_url: "url", cv_url: "url", status: "received", stage: "pending", experience_years: -1, notes_count: 0, applied_at: "2026-01-01", updated_at: "2026-01-01" }],
+    ["NaN experience_years", { id: "x", full_name: "Test", email: "a@b", phone: "123", position: "Dev", linkedin_url: "url", cv_url: "url", status: "received", stage: "pending", experience_years: NaN, notes_count: 0, applied_at: "2026-01-01", updated_at: "2026-01-01" }],
+    ["negative notes_count", { id: "x", full_name: "Test", email: "a@b", phone: "123", position: "Dev", linkedin_url: "url", cv_url: "url", status: "received", stage: "pending", experience_years: 1, notes_count: -1, applied_at: "2026-01-01", updated_at: "2026-01-01" }],
+    ["non-integer notes_count", { id: "x", full_name: "Test", email: "a@b", phone: "123", position: "Dev", linkedin_url: "url", cv_url: "url", status: "received", stage: "pending", experience_years: 1, notes_count: 1.5, applied_at: "2026-01-01", updated_at: "2026-01-01" }],
+    ["invalid status", { id: "x", full_name: "Test", email: "a@b", phone: "123", position: "Dev", linkedin_url: "url", cv_url: "url", status: "unknown_status", stage: "pending", experience_years: 1, notes_count: 0, applied_at: "2026-01-01", updated_at: "2026-01-01" }],
+    ["invalid stage", { id: "x", full_name: "Test", email: "a@b", phone: "123", position: "Dev", linkedin_url: "url", cv_url: "url", status: "received", stage: "unknown_stage", experience_years: 1, notes_count: 0, applied_at: "2026-01-01", updated_at: "2026-01-01" }],
+    ["invalid applied_at date", { id: "x", full_name: "Test", email: "a@b", phone: "123", position: "Dev", linkedin_url: "url", cv_url: "url", status: "received", stage: "pending", experience_years: 1, notes_count: 0, applied_at: "not-a-date", updated_at: "2026-01-01" }],
+    ["invalid updated_at date", { id: "x", full_name: "Test", email: "a@b", phone: "123", position: "Dev", linkedin_url: "url", cv_url: "url", status: "received", stage: "pending", experience_years: 1, notes_count: 0, applied_at: "2026-01-01", updated_at: "not-a-date" }],
+    ["updated_at before applied_at", { id: "x", full_name: "Test", email: "a@b", phone: "123", position: "Dev", linkedin_url: "url", cv_url: "url", status: "received", stage: "pending", experience_years: 1, notes_count: 0, applied_at: "2026-06-01", updated_at: "2026-01-01" }],
+    ["notes is not an array", { id: "x", full_name: "Test", email: "a@b", phone: "123", position: "Dev", linkedin_url: "url", cv_url: "url", status: "received", stage: "pending", experience_years: 1, notes_count: 0, applied_at: "2026-01-01", updated_at: "2026-01-01", notes: "not-an-array" }],
+    ["malformed CandidateNote", { id: "x", full_name: "Test", email: "a@b", phone: "123", position: "Dev", linkedin_url: "url", cv_url: "url", status: "received", stage: "pending", experience_years: 1, notes_count: 0, applied_at: "2026-01-01", updated_at: "2026-01-01", notes: [{ id: "", record_id: "x", content: "", created_at: "bad-date" }] }],
+  ];
+
+  for (const [label, input] of invalidCases) {
+    const result = validateCandidate(input);
+    console.log(`  ${label}:`);
+    console.log(`    valid: ${result.valid}`);
+    console.log(`    errors: ${JSON.stringify(result.errors)}`);
+  }
+
+  console.log();
+}
+
 printMilestoneBanner();
 printSampleSummary();
 printC3Examples();
 printC4Examples();
 printC5Examples();
+printC6Examples();
