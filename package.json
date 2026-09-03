@@ -1,0 +1,14 @@
+{
+  "name": "nexova-domain",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Nexova Solutions — Recruitment domain TypeScript business logic",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "demo": "tsx src/demo.ts"
+  },
+  "devDependencies": {
+    "typescript": "^5",
+    "tsx": "^4"
+  }
+}

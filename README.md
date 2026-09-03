@@ -299,6 +299,17 @@ ai-engineering-company-project-monorepo/
 
 ---
 
+## TypeScript Domain Utilities (`src/`)
+
+The `src/` directory contains the **Nexova Recruitment Domain** — pure TypeScript business logic for candidate operations in the selection pipeline. All commands must be executed from the **repository root** (`/workspaces/Project-FG-Company-Nexova`).
+
+| Command | Purpose |
+|---------|---------|
+| `npm run typecheck` | Validates TypeScript types without emitting compiled files. Runs `tsc --noEmit`. |
+| `npm run demo` | Executes the candidate domain examples and verification scenarios. Runs `tsx src/demo.ts`. |
+
+**Files:** `src/types/models.ts` (domain interfaces), `src/data/sampleCandidates.ts` (sample data), `src/utils/collections.ts` (filtering/sorting/grouping), `src/utils/search.ts` (linear & binary search), `src/utils/transformations.ts` (aggregations/reports), `src/utils/validations.ts` (business rule validation), `src/demo.ts` (entry point).
+
 ## Contributors
 
 This template was built as part of the 4Geeks Academy AI Engineering Career Program by [@marcogonzalo](https://www.linkedin.com/in/marcogonzalo) and [@alezanchezr](https://x.com/alesanchezr) and many other contributors. Find out more about our [AI Engineering Course](https://4geeksacademy.com/en/career-programs/ai-engineering), and [other courses](https://4geeksacademy.com/en/program-comparison).
